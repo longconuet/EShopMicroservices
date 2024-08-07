@@ -23,10 +23,10 @@ public class CreateProductEndPoint : ICarterModule
 
             return Results.Created();
         })
-            .WithName("CreateProduct")
-            .Produces<CreateProductResponse>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithSummary("Create Product")
-            .WithDescription("Create Product");
+        .WithName("CreateProduct")
+        .Produces<CreateProductResponse>(StatusCodes.Status201Created)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .WithSummary("Create Product")
+        .WithDescription("Create Product");
     }
 }
