@@ -10,7 +10,7 @@ public record CreateProductRequest(
 
 public record CreateProductResponse(Guid Id);
 
-public class CreateProductEndPoint : ICarterModule
+public class UpdateProductEndPoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
