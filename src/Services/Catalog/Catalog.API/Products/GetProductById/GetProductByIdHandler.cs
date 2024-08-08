@@ -24,6 +24,6 @@ internal class GetProductByIdQueryHandler : IQueryHandler<GetProductByIdQuery, G
         var product = await _session
             .LoadAsync<Product>(query.Id, cancellationToken);
 
-        return product == null ? throw new ProductNotFoundException() : new GetProductByIdResult(product);
+        return product == null ? throw new ProductNotFoundException(query.Id) : new GetProductByIdResult(product);
     }
 }
