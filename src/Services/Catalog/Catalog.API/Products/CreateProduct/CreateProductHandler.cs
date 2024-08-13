@@ -1,6 +1,4 @@
-﻿using Catalog.API.Products.DeleteProduct;
-
-namespace Catalog.API.Products.CreateProduct;
+﻿namespace Catalog.API.Products.CreateProduct;
 
 public record CreateProductCommand(
     string Name, 
