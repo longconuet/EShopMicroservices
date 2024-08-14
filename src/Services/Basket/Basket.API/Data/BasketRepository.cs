@@ -17,12 +17,12 @@ public class BasketRepository : IBasketRepository
         return basket is null ? throw new BasketNotFoundException(username) : basket;
     }
 
-    public async Task<ShoppingCart> StoreBasketAsync(ShoppingCart cart, CancellationToken cancellationToken = default)
+    public async Task<ShoppingCart> StoreBasketAsync(ShoppingCart basket, CancellationToken cancellationToken = default)
     {
-        var basket = await _session.LoadAsync<ShoppingCart>(cart.Username, cancellationToken);
-        if (basket is null)
+        var cart = await _session.LoadAsync<ShoppingCart>(basket.Username, cancellationToken);
+        if (cart is null)
         {
-            _session.Store(cart);
+            _session.Store(basket);
             await _session.SaveChangesAsync();
         }
 
