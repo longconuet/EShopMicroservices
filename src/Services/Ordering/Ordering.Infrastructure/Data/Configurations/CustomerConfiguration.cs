@@ -23,6 +23,8 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .Property(c => c.Email)
             .HasMaxLength(255);
 
-        builder.HasIndex(x => x.Email).IsUnique();
+        builder
+            .HasIndex(x => x.Email)
+            .IsUnique();
     }
 }
