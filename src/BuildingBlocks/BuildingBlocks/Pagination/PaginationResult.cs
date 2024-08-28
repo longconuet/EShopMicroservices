@@ -9,5 +9,5 @@ public class PaginationResult<TEntity>(
     public int Page { get; set; } = pageIndex;
     public int PageSize { get; set; } = pageSize;
     public long Count { get; set; } = count;
-    public IEnumerable<TEntity> data { get; set; } = data;
+    public IEnumerable<TEntity> Data { get; set; } = data;
 }
