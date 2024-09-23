@@ -1,4 +1,4 @@
-version: '3.4'
+﻿version: '3.4'
 
 services:
   catalogdb:
@@ -46,9 +46,20 @@ services:
       context: .
       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
 
+  portainer:
+    image: portainer/portainer-ce
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.24
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.24
+
 volumes:
   postgres_catalog:
   postgres_basket:
   data:
   sqlserver_order:
+  portainer_data:
+  elasticsearch-data:
 
