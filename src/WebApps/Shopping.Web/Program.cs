@@ -1,6 +1,15 @@
+using Shopping.Web.Services;
+using Shopping.Web.Services.IService;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<ICatalogService, CatalogService>();
+
+builder.Services.AddScoped<IBaseService, BaseService>();
+builder.Services.AddScoped<ICatalogService, CatalogService>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
