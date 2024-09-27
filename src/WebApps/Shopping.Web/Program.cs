@@ -11,9 +11,9 @@ builder.Services.AddTransient<LoggingDelegatingHandler>();
 
 builder.Services.AddHttpClient<ICatalogService, CatalogService>("catalog-api", c =>
     {
-        //var url = builder.Configuration.GetValue<string>("ApiSettings:GatewayAddress")!;
-        //c.BaseAddress = new Uri($"{url}/catalog-service/");
-        c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("CatalogAPI")!);
+        var gatewayUrl = builder.Configuration.GetValue<string>("ApiSettings:GatewayAddress")!;
+        c.BaseAddress = new Uri($"{gatewayUrl}/catalog-service/");
+        //c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("CatalogAPI")!);
         c.DefaultRequestHeaders.Add("Accept", "application/json");
     })
     .AddHttpMessageHandler<LoggingDelegatingHandler>();
