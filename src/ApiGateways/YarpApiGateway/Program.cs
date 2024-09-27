@@ -1,4 +1,6 @@
+using Common.Logging;
 using Microsoft.AspNetCore.RateLimiting;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,8 @@ builder.Services.AddRateLimiter(rateLimiterOptions =>
         options.PermitLimit = 5;
     });
 });
+
+builder.Host.UseSerilog(SeriLogger.Configure);
 
 var app = builder.Build();
 
