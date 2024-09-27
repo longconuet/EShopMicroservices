@@ -7,17 +7,23 @@ namespace Shopping.Web.Services;
 public class BaseService : IBaseService
 {
     private readonly IHttpClientFactory _httpClientFactory;
-    protected readonly HttpClient _httpClient;
+    protected string ClientName = "";
 
     public BaseService(IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = httpClientFactory;
-        _httpClient = _httpClientFactory.CreateClient("eshop-api");
     }
+
+    protected HttpClient CreateClient()
+    {
+        return _httpClientFactory.CreateClient(ClientName);
+    }
+
 
     public async Task<T> GetAsync<T>(string url)
     {
-        var response = await _httpClient.GetAsync(url);
+        var client = CreateClient();
+        var response = await client.GetAsync(url);
 
         response.EnsureSuccessStatusCode(); // Throws exception if status code is not 2xx
 
@@ -27,8 +33,9 @@ public class BaseService : IBaseService
 
     public async Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest requestData)
     {
+        var client = CreateClient();
         var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync(url, content);
+        var response = await client.PostAsync(url, content);
 
         response.EnsureSuccessStatusCode();
 
@@ -38,15 +45,17 @@ public class BaseService : IBaseService
 
     public async Task PutAsync<TRequest>(string url, TRequest requestData)
     {
+        var client = CreateClient();
         var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
-        var response = await _httpClient.PutAsync(url, content);
+        var response = await client.PutAsync(url, content);
 
         response.EnsureSuccessStatusCode();
     }
 
     public async Task DeleteAsync(string url)
     {
-        var response = await _httpClient.DeleteAsync(url);
+        var client = CreateClient();
+        var response = await client.DeleteAsync(url);
 
         response.EnsureSuccessStatusCode();
     }

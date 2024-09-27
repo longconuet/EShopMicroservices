@@ -7,6 +7,7 @@ public class CatalogService : BaseService, ICatalogService
 {
     public CatalogService(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
     {
+         ClientName = "catalog-api";
     }
 
     public async Task<List<ProductDto>> GetAllProductAsync()

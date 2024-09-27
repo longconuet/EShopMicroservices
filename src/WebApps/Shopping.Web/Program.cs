@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<LoggingDelegatingHandler>();
 
 
-builder.Services.AddHttpClient<ICatalogService, CatalogService>("eshop-api", c =>
+builder.Services.AddHttpClient<ICatalogService, CatalogService>("catalog-api", c =>
     {
         //var url = builder.Configuration.GetValue<string>("ApiSettings:GatewayAddress")!;
         //c.BaseAddress = new Uri($"{url}/catalog-service/");
