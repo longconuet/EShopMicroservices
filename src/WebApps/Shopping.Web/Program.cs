@@ -1,4 +1,5 @@
 using Common.Logging;
+using Serilog;
 using Shopping.Web.Services;
 using Shopping.Web.Services.IService;
 
@@ -8,9 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<LoggingDelegatingHandler>();
 
 
-builder.Services.AddHttpClient<ICatalogService, CatalogService>(c =>
+builder.Services.AddHttpClient<ICatalogService, CatalogService>("eshop-api", c =>
     {
-        c.BaseAddress = new Uri("https://localhost:5050"); // builder.Configuration.GetValue<string>("CatalogAPI")!)
+        //var url = builder.Configuration.GetValue<string>("ApiSettings:GatewayAddress")!;
+        //c.BaseAddress = new Uri($"{url}/catalog-service/");
+        c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("CatalogAPI")!);
         c.DefaultRequestHeaders.Add("Accept", "application/json");
     })
     .AddHttpMessageHandler<LoggingDelegatingHandler>();
@@ -18,8 +21,10 @@ builder.Services.AddHttpClient<ICatalogService, CatalogService>(c =>
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<ICatalogService, CatalogService>();
 
-
 builder.Services.AddControllersWithViews();
+
+// config serilog
+builder.Host.UseSerilog(SeriLogger.Configure);
 
 var app = builder.Build();
 
