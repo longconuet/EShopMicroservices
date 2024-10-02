@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace Ordering.Infrastructure.Data.Extensions;
 
@@ -8,10 +11,34 @@ public static class DatabaseExtensions
     public static async Task InitDatabaseAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<ApplicationDbContext>>();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        context.Database.MigrateAsync().GetAwaiter().GetResult();
+        
+        try
+        {
+            logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(ApplicationDbContext).Name);
 
-        await SeedAsync(context);
+            var retry = Policy.Handle<SqlException>()
+                        .WaitAndRetryAsync(
+                            retryCount: 5,
+                            sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                            onRetry: (exception, retryCount, context) =>
+                            {
+                                logger.LogError($"Retry {retryCount} of {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
+                            });
+
+            await retry.ExecuteAsync(async () =>
+            {
+                context.Database.MigrateAsync().GetAwaiter().GetResult();
+                await SeedAsync(context);
+            });
+
+            logger.LogInformation("Migrated database associated with context {DbContextName}", typeof(ApplicationDbContext).Name);
+        }
+        catch (SqlException ex)
+        {
+            logger.LogError(ex, "An error occurred while migrating the database used on context {DbContextName}", typeof(ApplicationDbContext).Name);
+        }
     }
 
     public static async Task SeedAsync(ApplicationDbContext context)
