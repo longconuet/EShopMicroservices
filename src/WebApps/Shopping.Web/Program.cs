@@ -1,11 +1,11 @@
 using Common.Logging;
-using Microsoft.Extensions.DependencyInjection;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Polly;
 using Polly.Extensions.Http;
 using Serilog;
 using Shopping.Web.Services;
 using Shopping.Web.Services.IService;
-using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,13 +15,12 @@ builder.Services.AddTransient<LoggingDelegatingHandler>();
 
 builder.Services.AddHttpClient<ICatalogService, CatalogService>("catalog-api", c =>
     {
-        var gatewayUrl = builder.Configuration.GetValue<string>("ApiSettings:GatewayAddress")!;
-        c.BaseAddress = new Uri($"{gatewayUrl}/catalog-service/");
+        c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApiSettings:CatalogApiUrl")!);
         //c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("CatalogAPI")!);
         c.DefaultRequestHeaders.Add("Accept", "application/json");
     })
     .AddHttpMessageHandler<LoggingDelegatingHandler>()
-    //.AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
+    //.AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, retryA ttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
     //.AddTransientHttpErrorPolicy(policy => policy.CircuitBreakerAsync(5, TimeSpan.FromSeconds(20)));
     .AddPolicyHandler(GetRetryPolicy())
     .AddPolicyHandler(GetCircuitBreakerPolicy());
@@ -33,6 +32,9 @@ builder.Services.AddControllersWithViews();
 
 // config serilog
 builder.Host.UseSerilog(SeriLogger.Configure);
+
+builder.Services.AddHealthChecks()
+    .AddUrlGroup(new Uri($"{builder.Configuration.GetValue<string>("ApiSettings:CatalogApiUrl")!}index.html"), name: "catalog_api", tags: ["url", "liveness"]);
 
 var app = builder.Build();
 
@@ -54,6 +56,12 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.UseHealthChecks("/health",
+    new HealthCheckOptions
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
 
 app.Run();
 

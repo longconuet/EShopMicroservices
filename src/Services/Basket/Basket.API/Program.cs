@@ -59,7 +59,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
-    .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
+    .AddRedis(builder.Configuration.GetConnectionString("Redis")!)
+    .AddRabbitMQ(builder.Configuration.GetValue<string>("MessageBroker:Host")!, name: "rabbitmq", tags: ["ready", "liveness"]);
 
 // Config Serilog
 builder.Host.UseSerilog(SeriLogger.Configure);

@@ -12,7 +12,11 @@ public static class DependencyInjection
 
         services.AddExceptionHandler<CustomExceptionHandler>();
         services.AddHealthChecks()
-            .AddSqlServer(configuration.GetConnectionString("Database")!);
+            .AddSqlServer(configuration.GetConnectionString("Database")!)
+            .AddRabbitMQ(configuration.GetValue<string>("MessageBroker:Host")!, name: "rabbitmq", tags: ["ready", "liveness"]);
+
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
 
         return services;
     }
