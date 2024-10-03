@@ -61,6 +61,12 @@ services:
       context: .
       dockerfile: WebApps/Shopping.Web/Dockerfile
 
+  webstatus:
+    image: ${DOCKER_REGISTRY-}webstatus
+    build:
+      context: .
+      dockerfile: WebApps/WebStatus/Dockerfile
+
 volumes:
   postgres_catalog:
   postgres_basket:
@@ -68,5 +74,6 @@ volumes:
   sqlserver_order:
   portainer_data:
   elasticsearch-data:
+
 
 
